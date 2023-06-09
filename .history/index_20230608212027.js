@@ -7,10 +7,13 @@ const cors = require('cors')
 const port = process.env.PORT || 5000 
 
 
+//user: User05
+//password: Itb92FuCAFinxihQ
 // midleware
 app.use(cors())
 app.use(express.json())
  
+console.log(process);
 
 const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.BD_PASSWORD}@cluster0.no0vwww.mongodb.net/?retryWrites=true&w=majority`;
 

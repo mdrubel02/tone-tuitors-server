@@ -7,12 +7,15 @@ const cors = require('cors')
 const port = process.env.PORT || 5000 
 
 
+//user: User05
+//password: Itb92FuCAFinxihQ
 // midleware
 app.use(cors())
 app.use(express.json())
  
 
-const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.BD_PASSWORD}@cluster0.no0vwww.mongodb.net/?retryWrites=true&w=majority`;
+
+const uri = "mongodb+srv://User05:<password>@cluster0.no0vwww.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {

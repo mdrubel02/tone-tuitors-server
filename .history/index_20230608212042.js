@@ -7,6 +7,8 @@ const cors = require('cors')
 const port = process.env.PORT || 5000 
 
 
+//user: User05
+//password: Itb92FuCAFinxihQ
 // midleware
 app.use(cors())
 app.use(express.json())
