@@ -74,22 +74,7 @@ async function run() {
       res.send(result);
 
     })
-    //make instructor
-    app.patch('/users/instructor/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          role: 'instructor'
-        },
-      };
-
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
-
-    })
-    // users 
+    // users related apis
     app.get('/users', verifyJWT, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);

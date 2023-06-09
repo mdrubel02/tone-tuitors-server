@@ -2,7 +2,7 @@ const express = require('express')
 var jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
-const { MongoClient, ServerApiVersion,ObjectId} = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors')
 const port = process.env.PORT || 5000
 
@@ -10,27 +10,6 @@ const port = process.env.PORT || 5000
 // midleware
 app.use(cors())
 app.use(express.json())
-
-//verify valid user
-const verifyJWT = (req, res, next) => {
-  const authorization = req.headers.authorization;
-  console.log(authorization);
-  if (!authorization) {
-    return res.status(401).send({ error: true, message: 'unauthorized access' });
-  }
-  // bearer token
-  const token = authorization.split(' ')[1];
-  console.log(token);
-
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
-    if (err) {
-      return res.status(401).send({ error: true, message: 'unauthorized access' })
-    }
-    req.decoded = decoded;
-    console.log(decoded);
-    next();
-  })
-}
 
 
 const uri = `mongodb+srv://${process.env.BD_USER}:${process.env.BD_PASSWORD}@cluster0.no0vwww.mongodb.net/?retryWrites=true&w=majority`;
@@ -59,38 +38,10 @@ async function run() {
     })
 
 
-    //make admin
-    app.patch('/users/admin/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          role: 'admin'
-        },
-      };
 
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
 
-    })
-    //make instructor
-    app.patch('/users/instructor/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          role: 'instructor'
-        },
-      };
-
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
-
-    })
-    // users 
-    app.get('/users', verifyJWT, async (req, res) => {
+    // users related apis
+    app.get('/users',  async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });

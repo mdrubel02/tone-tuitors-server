@@ -2,7 +2,7 @@ const express = require('express')
 var jwt = require('jsonwebtoken');
 require('dotenv').config()
 const app = express()
-const { MongoClient, ServerApiVersion,ObjectId} = require('mongodb');
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors')
 const port = process.env.PORT || 5000
 
@@ -22,7 +22,7 @@ const verifyJWT = (req, res, next) => {
   const token = authorization.split(' ')[1];
   console.log(token);
 
-  jwt.verify(token, process.env.SECRET_KEY, (err, decoded) => {
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
     if (err) {
       return res.status(401).send({ error: true, message: 'unauthorized access' })
     }
@@ -59,37 +59,9 @@ async function run() {
     })
 
 
-    //make admin
-    app.patch('/users/admin/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          role: 'admin'
-        },
-      };
 
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
 
-    })
-    //make instructor
-    app.patch('/users/instructor/:id', async (req, res) => {
-      const id = req.params.id;
-      console.log(id);
-      const filter = { _id: new ObjectId(id) };
-      const updateDoc = {
-        $set: {
-          role: 'instructor'
-        },
-      };
-
-      const result = await usersCollection.updateOne(filter, updateDoc);
-      res.send(result);
-
-    })
-    // users 
+    // users related apis
     app.get('/users', verifyJWT, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
