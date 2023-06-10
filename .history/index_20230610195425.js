@@ -83,6 +83,7 @@ async function run() {
       const query = { email: email }
       const user = await usersCollection.findOne(query);
       const result = { instructor: user?.role === 'instructor' }
+      console.log(result);
       res.send(result);
     })
     //make admin
@@ -123,6 +124,7 @@ async function run() {
     //user create
     app.post('/users', async (req, res) => {
       const user = req.body;
+      console.log(user);
       const query = { email: user.email }
       const existingUser = await usersCollection.findOne(query);
       if (existingUser) {
@@ -134,35 +136,28 @@ async function run() {
 
     //classes route
 
-    app.get('/classes', async (req, res) => {
+    app.get('/classes', async(req,res)=>{
       const result = await classesCollection.find().toArray();
       res.send(result);
     })
 
-    app.post('/bookings/class', verifyJWT, async (req, res) => {
+    app.post('/bookings/class', verifyJWT, async (req,res)=>{
       const bookings = req.body;
-      const query = { instructor_name: bookings.instructor_name }
+      console.log(bookings);
+      const query = {instructor_name: bookings.instructor_name}
       const existingBookings = await bookingsClassesCollection.findOne(query);
-      if (!existingBookings) {
+      console.log(existingBookings);
+      if(!existingBookings){
         const result = await bookingsClassesCollection.insertOne(bookings);
         res.send(result);
       }
-      else {
-        return res.send({ message: 'You have already added this class' })
+      else{
+        return res.send({message : 'You have already added this class'})
       }
     })
-    app.get('/selected/:email', async (req, res) => {
+    app.get('/selected/:email', async (req,res)=>{
       const email = req.params.email
-      const query = { email: email }
-      const result = await bookingsClassesCollection.find(query).toArray()
-      res.send(result)
-    })
-    app.delete('/selected/:id', async (req, res) => {
-      const id = req.params.id
-      console.log(id);
-      const query = { _id: new ObjectId(id) }
-      const result = await bookingsClassesCollection.deleteOne(query)
-      res.send(result)
+      console.log(email);
     })
   } finally {
 
