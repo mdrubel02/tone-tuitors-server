@@ -144,16 +144,9 @@ async function run() {
     app.post('/bookings/class', verifyJWT, async (req,res)=>{
       const bookings = req.body;
       console.log(bookings);
-      const query = {instructor_name: bookings.instructor_name}
+      const query = {email: bookings.email}
       const existingBookings = await bookingsClassesCollection.findOne(query);
       console.log(existingBookings);
-      if(!existingBookings){
-        const result = await bookingsClassesCollection.insertOne(bookings);
-        res.send(result);
-      }
-      else{
-        return res.send({message : 'You have already added this class'})
-      }
     })
   } finally {
 

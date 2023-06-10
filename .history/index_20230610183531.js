@@ -45,7 +45,6 @@ async function run() {
     await client.connect();
     const usersCollection = client.db("ToneTors").collection("user")
     const classesCollection = client.db("ToneTors").collection("classes")
-    const bookingsClassesCollection = client.db("ToneTors").collection("bookingsClasses")
     //jwt token ganerate
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -144,16 +143,6 @@ async function run() {
     app.post('/bookings/class', verifyJWT, async (req,res)=>{
       const bookings = req.body;
       console.log(bookings);
-      const query = {instructor_name: bookings.instructor_name}
-      const existingBookings = await bookingsClassesCollection.findOne(query);
-      console.log(existingBookings);
-      if(!existingBookings){
-        const result = await bookingsClassesCollection.insertOne(bookings);
-        res.send(result);
-      }
-      else{
-        return res.send({message : 'You have already added this class'})
-      }
     })
   } finally {
 
