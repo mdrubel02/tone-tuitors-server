@@ -44,7 +44,6 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const usersCollection = client.db("ToneTors").collection("user")
-    const classesCollection = client.db("ToneTors").collection("classes")
     //jwt token ganerate
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -132,13 +131,6 @@ async function run() {
       const result = await usersCollection.insertOne(user);
       res.send(result);
     });
-
-    //classes route
-
-    app.get('/classes', async(req,res)=>{
-      const result = await classesCollection.find().toArray();
-      res.send(result);
-    })
   } finally {
 
   }
