@@ -171,11 +171,8 @@ async function run() {
     })
     //payment 
     // create payment intent
-    app.get('/payments/:email', async (req,res)=>{
-      const email = req.params.email
-      console.log(email);
-      const query = { email: email }
-      const result = await paymentCollection.find(query).sort({date: -1}).toArray();
+    app.get('/payments',verifyJWT, async (req,res)=>{
+      const result = await paymentCollection.find().sort({date: -1}).toArray();
       res.send(result)
     })
     app.post('/create-payment-intent', async (req, res) => {

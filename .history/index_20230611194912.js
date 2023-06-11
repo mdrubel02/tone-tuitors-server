@@ -171,7 +171,7 @@ async function run() {
     })
     //payment 
     // create payment intent
-    app.get('/payments/:email', async (req,res)=>{
+    app.get('/payments', async (req,res)=>{
       const email = req.params.email
       console.log(email);
       const query = { email: email }
