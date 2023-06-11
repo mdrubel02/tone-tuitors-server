@@ -189,14 +189,11 @@ async function run() {
    app.post('/payments', async (req, res) => {
     const payment = req.body;
     const {courseId,classesId} = payment
+    console.log(courseId, classesId,'line number up');
     const insertResult = await paymentCollection.insertOne(payment);
     const ClassQuery = { _id: new ObjectId(classesId) }
     const classDoc = await classesCollection.findOne(ClassQuery);
-    const updatedSeats = classDoc.available_seats - 1;
-    await classesCollection.updateOne(
-      { _id: new ObjectId(classesId) },
-      { $set: { available_seats: updatedSeats } }
-    );
+    console.log(classDoc,'line number');
     const query = { _id: new ObjectId(courseId)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
     res.send({ insertResult, deleteResult });

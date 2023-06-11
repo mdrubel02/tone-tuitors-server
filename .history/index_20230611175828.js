@@ -90,6 +90,7 @@ async function run() {
     //make admin
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -104,6 +105,7 @@ async function run() {
     //make instructor
     app.patch('/users/instructor/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -189,14 +191,11 @@ async function run() {
    app.post('/payments', async (req, res) => {
     const payment = req.body;
     const {courseId,classesId} = payment
+    console.log(courseId, classesId,'line number up');
     const insertResult = await paymentCollection.insertOne(payment);
     const ClassQuery = { _id: new ObjectId(classesId) }
     const classDoc = await classesCollection.findOne(ClassQuery);
-    const updatedSeats = classDoc.available_seats - 1;
-    await classesCollection.updateOne(
-      { _id: new ObjectId(classesId) },
-      { $set: { available_seats: updatedSeats } }
-    );
+    console.log(classDoc,'line number');
     const query = { _id: new ObjectId(courseId)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
     res.send({ insertResult, deleteResult });

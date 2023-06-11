@@ -193,10 +193,7 @@ async function run() {
     const ClassQuery = { _id: new ObjectId(classesId) }
     const classDoc = await classesCollection.findOne(ClassQuery);
     const updatedSeats = classDoc.available_seats - 1;
-    await classesCollection.updateOne(
-      { _id: new ObjectId(classesId) },
-      { $set: { available_seats: updatedSeats } }
-    );
+    console.log(updatedSeats,'line number');
     const query = { _id: new ObjectId(courseId)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
     res.send({ insertResult, deleteResult });

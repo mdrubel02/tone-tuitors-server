@@ -90,6 +90,7 @@ async function run() {
     //make admin
     app.patch('/users/admin/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -104,6 +105,7 @@ async function run() {
     //make instructor
     app.patch('/users/instructor/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
         $set: {
@@ -153,8 +155,10 @@ async function run() {
     })
     app.get('/bookings/:id', async (req, res) => {
       const id = req.params.id;
+      console.log(id);
       const query = { _id: new ObjectId(id) };
       const booking = await bookingsClassesCollection.findOne(query);
+      console.log(booking);
       res.send(booking);
     })
     app.get('/selected/:email', async (req, res) => {
@@ -165,6 +169,7 @@ async function run() {
     })
     app.delete('/selected/:id', async (req, res) => {
       const id = req.params.id
+      console.log(id);
       const query = { _id: new ObjectId(id) }
       const result = await bookingsClassesCollection.deleteOne(query)
       res.send(result)
@@ -188,16 +193,13 @@ async function run() {
 
    app.post('/payments', async (req, res) => {
     const payment = req.body;
-    const {courseId,classesId} = payment
+    const id = payment.courseId
+    const classId = payment.classesId;
     const insertResult = await paymentCollection.insertOne(payment);
-    const ClassQuery = { _id: new ObjectId(classesId) }
+    const ClassQuery = { _id: new ObjectId(classId) }
     const classDoc = await classesCollection.findOne(ClassQuery);
-    const updatedSeats = classDoc.available_seats - 1;
-    await classesCollection.updateOne(
-      { _id: new ObjectId(classesId) },
-      { $set: { available_seats: updatedSeats } }
-    );
-    const query = { _id: new ObjectId(courseId)}
+    console.log(classDoc);
+    const query = { _id: new ObjectId(id)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
     res.send({ insertResult, deleteResult });
   })
