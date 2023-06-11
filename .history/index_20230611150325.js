@@ -194,12 +194,12 @@ async function run() {
     const payment = req.body;
     const id = payment.courseId
     console.log(id);
-    const insertResult = await paymentCollection.insertOne(payment);
-    const query = { _id: new ObjectId(id)}
-    const deleteResult = await bookingsClassesCollection.deleteOne(query)
-    console.log(deleteResult);
-    console.log(insertResult);
-    res.send({ insertResult, deleteResult });
+    // const insertResult = await paymentCollection.insertOne(payment);
+
+    // const query = { _id:  }
+    // const deleteResult = await cartCollection.deleteMany(query)
+
+    // res.send({ insertResult, deleteResult });
   })
   } 
   finally {

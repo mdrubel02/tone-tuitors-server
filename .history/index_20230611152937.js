@@ -195,10 +195,10 @@ async function run() {
     const id = payment.courseId
     console.log(id);
     const insertResult = await paymentCollection.insertOne(payment);
+
     const query = { _id: new ObjectId(id)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
-    console.log(deleteResult);
-    console.log(insertResult);
+
     res.send({ insertResult, deleteResult });
   })
   } 

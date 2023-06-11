@@ -198,7 +198,6 @@ async function run() {
     const query = { _id: new ObjectId(id)}
     const deleteResult = await bookingsClassesCollection.deleteOne(query)
     console.log(deleteResult);
-    console.log(insertResult);
     res.send({ insertResult, deleteResult });
   })
   } 

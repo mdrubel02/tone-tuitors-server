@@ -47,7 +47,6 @@ async function run() {
     const usersCollection = client.db("ToneTors").collection("user")
     const classesCollection = client.db("ToneTors").collection("classes")
     const bookingsClassesCollection = client.db("ToneTors").collection("bookingsClasses")
-    const paymentCollection = client.db("ToneTors").collection("payments");
     //jwt token ganerate
     app.post('/jwt', (req, res) => {
       const user = req.body;
@@ -190,17 +189,7 @@ async function run() {
     })
 
 
-   app.post('/payments', async (req, res) => {
-    const payment = req.body;
-    const id = payment.courseId
-    console.log(id);
-    const insertResult = await paymentCollection.insertOne(payment);
-    const query = { _id: new ObjectId(id)}
-    const deleteResult = await bookingsClassesCollection.deleteOne(query)
-    console.log(deleteResult);
-    console.log(insertResult);
-    res.send({ insertResult, deleteResult });
-  })
+
   } 
   finally {
 
