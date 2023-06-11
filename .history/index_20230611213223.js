@@ -15,7 +15,6 @@ app.use(express.json())
 //verify valid user
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
-  console.log(authorization);
   if (!authorization) {
     return res.status(401).send({ error: true, message: 'unauthorized access' });
   }
@@ -59,7 +58,6 @@ async function run() {
     //check the verifyAdmin 
     const verifyAdmin = async (req, res, next) => {
       const email = req.decoded.email;
-      console.log(email);
       const query = { email: email }
       const user = await usersCollection.findOne(query);
       if (user?.role !== 'admin') {
@@ -67,9 +65,8 @@ async function run() {
       }
       next();
       //admin check 
-      app.get('/users/admin/:email',  async (req, res) => {
+      app.get('/users/admin/:email', verifyJWT, async (req, res) => {
         const email = req.params.email;
-        console.log(email);
         if (req.decoded.email !== email) {
           res.send({ admin: false })
         }
@@ -176,6 +173,7 @@ async function run() {
     // create payment intent
     app.get('/payments/:email', async (req,res)=>{
       const email = req.params.email
+      console.log(email);
       const query = { email: email }
       const result = await paymentCollection.find(query).sort({date: -1}).toArray();
       res.send(result)

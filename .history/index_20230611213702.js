@@ -67,7 +67,7 @@ async function run() {
       }
       next();
       //admin check 
-      app.get('/users/admin/:email',  async (req, res) => {
+      app.get('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
         const email = req.params.email;
         console.log(email);
         if (req.decoded.email !== email) {

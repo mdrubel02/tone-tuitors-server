@@ -15,7 +15,6 @@ app.use(express.json())
 //verify valid user
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
-  console.log(authorization);
   if (!authorization) {
     return res.status(401).send({ error: true, message: 'unauthorized access' });
   }
@@ -67,9 +66,8 @@ async function run() {
       }
       next();
       //admin check 
-      app.get('/users/admin/:email',  async (req, res) => {
+      app.get('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
         const email = req.params.email;
-        console.log(email);
         if (req.decoded.email !== email) {
           res.send({ admin: false })
         }
