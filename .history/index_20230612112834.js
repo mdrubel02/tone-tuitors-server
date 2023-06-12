@@ -46,7 +46,6 @@ async function run() {
     await client.connect();
     const usersCollection = client.db("ToneTors").collection("user")
     const classesCollection = client.db("ToneTors").collection("classes")
-    const instructorClassCollection = client.db("ToneTors").collection("instructorClass")
     const bookingsClassesCollection = client.db("ToneTors").collection("bookingsClasses")
     const paymentCollection = client.db("ToneTors").collection("payments");
     //jwt token ganerate
@@ -140,8 +139,7 @@ async function run() {
     //add a new class 
     app.post('/instructor/class',async (req,res)=>{
       const newClass = req.body;
-      const result = await instructorClassCollection.insertOne(newClass)
-      res.send(result)
+      console.log(newClass);
     })
 
     app.get('/classes', async (req, res) => {
