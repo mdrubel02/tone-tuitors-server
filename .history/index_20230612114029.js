@@ -67,8 +67,9 @@ async function run() {
       next();
     }
     //admin check 
-    app.get('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
+    app.get('/users/admin/:email',verifyJWT,verifyAdmin, async (req, res) => {
       const email = req.params.email;
+      console.log(email);
       if (req.decoded.email !== email) {
         res.send({ admin: false })
       }
@@ -137,28 +138,16 @@ async function run() {
     //classes route
 
     //add a new class 
-    app.post('/instructor/class', async (req, res) => {
+    app.post('/instructor/class',async (req,res)=>{
       const newClass = req.body;
       const result = await instructorClassCollection.insertOne(newClass)
       res.send(result)
     })
-    app.patch('/instructor/class/:id', async (req,res) =>{
-      const id = req.params.id;
-      const newClass = req.body;
-      const filter = { _id: new ObjectId(id)}
-      const updateNewClass = {
-        $set: newClass
-      }
-      const result = await instructorClassCollection.updateOne(filter,updateNewClass)
-      res.send(result)
-    })
 
     //get the new class of instructor
-    app.get('/instructor/class/:email', async (req, res) => {
+    app.get('/instructor/class:email', async (req,res)=>{
       const email = req.params.email
-      const query = { email: email };
-      const result = await instructorClassCollection.find(query).toArray()
-      res.send(result);
+      console.log(email);
     })
 
     app.get('/classes', async (req, res) => {
@@ -186,7 +175,7 @@ async function run() {
     })
     app.get('/selected/:email', async (req, res) => {
       const email = req.params.email
-      const query = {email: email }
+      const query = { email: email }
       const result = await bookingsClassesCollection.find(query).toArray()
       res.send(result)
     })

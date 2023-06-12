@@ -142,16 +142,6 @@ async function run() {
       const result = await instructorClassCollection.insertOne(newClass)
       res.send(result)
     })
-    app.patch('/instructor/class/:id', async (req,res) =>{
-      const id = req.params.id;
-      const newClass = req.body;
-      const filter = { _id: new ObjectId(id)}
-      const updateNewClass = {
-        $set: newClass
-      }
-      const result = await instructorClassCollection.updateOne(filter,updateNewClass)
-      res.send(result)
-    })
 
     //get the new class of instructor
     app.get('/instructor/class/:email', async (req, res) => {
