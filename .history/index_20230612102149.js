@@ -64,20 +64,19 @@ async function run() {
         return res.status(403).send({ error: true, message: 'forbidden message' });
       }
       next();
+      //admin check 
+      app.get('/users/admin/:email',  async (req, res) => {
+        const email = req.params.email;
+        console.log(email);
+        // if (req.decoded.email !== email) {
+        //   res.send({ admin: false })
+        // }
+        const query = { email: email }
+        const user = await usersCollection.findOne(query);
+        const result = { admin: user?.role === 'admin' }
+        res.send(result);
+      })
     }
-    //admin check 
-    app.get('/users/admin/:email',verifyJWT,verifyAdmin, async (req, res) => {
-      const email = req.params.email;
-      console.log(email);
-      if (req.decoded.email !== email) {
-        res.send({ admin: false })
-      }
-      const query = { email: email }
-      const user = await usersCollection.findOne(query);
-      const result = { admin: user?.role === 'admin' }
-      res.send(result);
-    })
-
     //instructor check 
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
@@ -173,10 +172,10 @@ async function run() {
     })
     //payment 
     // create payment intent
-    app.get('/payments/:email', async (req, res) => {
+    app.get('/payments/:email', async (req,res)=>{
       const email = req.params.email
       const query = { email: email }
-      const result = await paymentCollection.find(query).sort({ date: -1 }).toArray();
+      const result = await paymentCollection.find(query).sort({date: -1}).toArray();
       res.send(result)
     })
     app.post('/create-payment-intent', async (req, res) => {
@@ -194,22 +193,22 @@ async function run() {
     })
 
 
-    app.post('/payments', async (req, res) => {
-      const payment = req.body;
-      const { courseId, classesId } = payment
-      const insertResult = await paymentCollection.insertOne(payment);
-      const ClassQuery = { _id: new ObjectId(classesId) }
-      const classDoc = await classesCollection.findOne(ClassQuery);
-      const updatedSeats = classDoc.available_seats - 1;
-      await classesCollection.updateOne(
-        { _id: new ObjectId(classesId) },
-        { $set: { available_seats: updatedSeats } }
-      );
-      const query = { _id: new ObjectId(courseId) }
-      const deleteResult = await bookingsClassesCollection.deleteOne(query)
-      res.send({ insertResult, deleteResult });
-    })
-  }
+   app.post('/payments', async (req, res) => {
+    const payment = req.body;
+    const {courseId,classesId} = payment
+    const insertResult = await paymentCollection.insertOne(payment);
+    const ClassQuery = { _id: new ObjectId(classesId) }
+    const classDoc = await classesCollection.findOne(ClassQuery);
+    const updatedSeats = classDoc.available_seats - 1;
+    await classesCollection.updateOne(
+      { _id: new ObjectId(classesId) },
+      { $set: { available_seats: updatedSeats } }
+    );
+    const query = { _id: new ObjectId(courseId)}
+    const deleteResult = await bookingsClassesCollection.deleteOne(query)
+    res.send({ insertResult, deleteResult });
+  })
+  } 
   finally {
 
   }

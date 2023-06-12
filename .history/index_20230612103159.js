@@ -64,20 +64,20 @@ async function run() {
         return res.status(403).send({ error: true, message: 'forbidden message' });
       }
       next();
-    }
-    //admin check 
-    app.get('/users/admin/:email',verifyJWT,verifyAdmin, async (req, res) => {
+      //admin check 
+    app.get('/users/admin/:email', async (req, res) => {
       const email = req.params.email;
       console.log(email);
-      if (req.decoded.email !== email) {
-        res.send({ admin: false })
-      }
+      // if (req.decoded.email !== email) {
+      //   res.send({ admin: false })
+      // }
       const query = { email: email }
       const user = await usersCollection.findOne(query);
       const result = { admin: user?.role === 'admin' }
       res.send(result);
     })
-
+    }
+    
     //instructor check 
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
