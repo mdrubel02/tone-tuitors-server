@@ -52,8 +52,7 @@ async function run() {
     const bookingsClassesCollection = client.db("ToneTors").collection("bookingsClasses")
     const paymentCollection = client.db("ToneTors").collection("payments");
     const popularCollection = client.db("ToneTors").collection("popular-instructor");
-    const testimonialsCollection = client.db("ToneTors").collection("testimonials");
-   
+    const testimonialsCollection =client.db("toneTors").collection("testimonials")
     //jwt token ganerate
     app.post('/jwt', (req, res) => {
       const user = req.body;
