@@ -253,10 +253,6 @@ async function run() {
       const result = await classesCollection.find().sort({enrolled: -1}).limit(6).toArray()
       res.send(result)
     })
-    app.get('/popular/instructor', async (req,res)=>{
-      const result = await popularCollection.find().toArray();
-      res.send(result)
-    })
   }
   finally {
 
