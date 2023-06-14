@@ -230,7 +230,7 @@ async function run() {
       const insertResult = await paymentCollection.insertOne(payment);
       const ClassQuery = { _id: new ObjectId(classesId) }
       const classDoc = await classesCollection.findOne(ClassQuery);
-     
+      console.log(classDoc);
       const updatedSeats = classDoc.available_seats - 1;
       const updateEnroll = classDoc.enrolled + 1;
       await classesCollection.updateOne(
@@ -242,15 +242,9 @@ async function run() {
           }
         }
       );
-      console.log(classDoc);
       const query = { _id: new ObjectId(courseId) }
       const deleteResult = await bookingsClassesCollection.deleteOne(query)
       res.send({ insertResult, deleteResult });
-    })
-    //popular class 
-    app.get('/popular/class', async (req,res)=>{
-      const result = await classesCollection.find().sort({enrolled: -1}).limit(6).toArray()
-      res.send(result)
     })
   }
   finally {

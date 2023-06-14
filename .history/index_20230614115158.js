@@ -247,11 +247,6 @@ async function run() {
       const deleteResult = await bookingsClassesCollection.deleteOne(query)
       res.send({ insertResult, deleteResult });
     })
-    //popular class 
-    app.get('/popular/class', async (req,res)=>{
-      const result = await classesCollection.find().sort({enrolled: -1}).limit(6).toArray()
-      res.send(result)
-    })
   }
   finally {
 

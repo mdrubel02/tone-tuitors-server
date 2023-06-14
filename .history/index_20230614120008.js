@@ -249,7 +249,7 @@ async function run() {
     })
     //popular class 
     app.get('/popular/class', async (req,res)=>{
-      const result = await classesCollection.find().sort({enrolled: -1}).limit(6).toArray()
+      const result = await classesCollection.find().sort({enrolled: -1}).toArray()
       res.send(result)
     })
   }

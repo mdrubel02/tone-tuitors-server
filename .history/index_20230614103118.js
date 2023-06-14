@@ -75,10 +75,13 @@ async function run() {
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
+        console.log('hello');
        return res.send({ instructor: false })
       }
       const query = { email: email }
+      console.log(query);
       const user = await usersCollection.findOne(query);
+      console.log(user);
       const result = { instructor: user?.role === 'instructor' }
       res.send(result);
     })
@@ -140,7 +143,7 @@ async function run() {
       const result = await instructorClassCollection.insertOne(newClass)
       res.send(result)
     })
-    app.get('/instructor/class', verifyJWT, async (req,res)=>{
+    app.get('/instructor/class',  async (req,res)=>{
       const result = await instructorClassCollection.find().toArray();
       res.send(result)
     })
@@ -230,27 +233,14 @@ async function run() {
       const insertResult = await paymentCollection.insertOne(payment);
       const ClassQuery = { _id: new ObjectId(classesId) }
       const classDoc = await classesCollection.findOne(ClassQuery);
-     
       const updatedSeats = classDoc.available_seats - 1;
-      const updateEnroll = classDoc.enrolled + 1;
       await classesCollection.updateOne(
         { _id: new ObjectId(classesId) },
-        {
-          $set: {
-            available_seats: updatedSeats,
-            enrolled: updateEnroll
-          }
-        }
+        { $set: { available_seats: updatedSeats } }
       );
-      console.log(classDoc);
       const query = { _id: new ObjectId(courseId) }
       const deleteResult = await bookingsClassesCollection.deleteOne(query)
       res.send({ insertResult, deleteResult });
-    })
-    //popular class 
-    app.get('/popular/class', async (req,res)=>{
-      const result = await classesCollection.find().sort({enrolled: -1}).limit(6).toArray()
-      res.send(result)
     })
   }
   finally {
