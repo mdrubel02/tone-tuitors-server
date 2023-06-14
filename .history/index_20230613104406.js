@@ -12,8 +12,6 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-
-
 //verify valid user
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
@@ -58,12 +56,21 @@ async function run() {
       res.send({ token })
     })
 
-
+    //check the verifyAdmin 
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== 'admin') {
+        return res.status(403).send({ error: true, message: 'forbidden message' });
+      }
+      next();
+    }
     //admin check 
-    app.get('/users/admin/:email', verifyJWT, async (req, res) => {
+    app.get('/users/admin/:email', verifyJWT, verifyAdmin, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
-        return res.send({ admin: false })
+        res.send({ admin: false })
       }
       const query = { email: email }
       const user = await usersCollection.findOne(query);
@@ -75,13 +82,10 @@ async function run() {
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
-        console.log('hello');
-       return res.send({ instructor: false })
+        res.send({ instructor: false })
       }
       const query = { email: email }
-      console.log(query);
       const user = await usersCollection.findOne(query);
-      console.log(user);
       const result = { instructor: user?.role === 'instructor' }
       res.send(result);
     })
@@ -100,7 +104,7 @@ async function run() {
 
     })
     //make instructor
-    app.patch('/users/instructor/:id',  async (req, res) => {
+    app.patch('/users/instructor/:id', async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
@@ -114,7 +118,7 @@ async function run() {
 
     })
     // users 
-    app.get('/users',  async (req, res) => {
+    app.get('/users', verifyJWT, async (req, res) => {
       const result = await usersCollection.find().toArray();
       res.send(result);
     });
@@ -133,7 +137,7 @@ async function run() {
     //classes route
 
     //add a new class 
-    app.get('/instructors/approvedClass',  async (req,res)=>{
+    app.get('/instructors/approvedClass', async (req,res)=>{
       const query = {status: 'approved'};
       const result = await instructorClassCollection.find(query).toArray()
       res.send(result)
@@ -143,11 +147,11 @@ async function run() {
       const result = await instructorClassCollection.insertOne(newClass)
       res.send(result)
     })
-    app.get('/instructor/class',  async (req,res)=>{
+    app.get('/instructor/class', async (req,res)=>{
       const result = await instructorClassCollection.find().toArray();
       res.send(result)
     })
-    app.patch('/instructor/class/:id',  async (req,res) =>{
+    app.patch('/instructor/class/:id', async (req,res) =>{
       const id = req.params.id;
       const newClass = req.body;
       const filter = { _id: new ObjectId(id)}
@@ -173,10 +177,7 @@ async function run() {
 
     app.post('/bookings/class',  async (req, res) => {
       const bookings = req.body;
-      const query = {  $and: [
-        { instructor_name: bookings.instructor_name },
-        { email: bookings.email }
-      ] }
+      const query = { instructor_name: bookings.instructor_name }
       const existingBookings = await bookingsClassesCollection.findOne(query);
       if (!existingBookings) {
         const result = await bookingsClassesCollection.insertOne(bookings);
@@ -192,7 +193,7 @@ async function run() {
       const booking = await bookingsClassesCollection.findOne(query);
       res.send(booking);
     })
-    app.get('/selected/:email',  async (req, res) => {
+    app.get('/selected/:email', async (req, res) => {
       const email = req.params.email
       const query = {email: email }
       const result = await bookingsClassesCollection.find(query).toArray()

@@ -17,6 +17,7 @@ app.use(express.json())
 //verify valid user
 const verifyJWT = (req, res, next) => {
   const authorization = req.headers.authorization;
+  console.log(authorization);
   if (!authorization) {
     return res.status(401).send({ error: true, message: 'unauthorized access' });
   }
@@ -58,7 +59,26 @@ async function run() {
       res.send({ token })
     })
 
-
+    //check the verifyAdmin 
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== 'admin') {
+        return res.status(403).send({ error: true, message: 'forbidden message' });
+      }
+      next();
+    }
+    //check the verifyAdmin 
+    const verifyInstructor = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== 'instructor') {
+        return res.status(403).send({ error: true, message: 'forbidden message' });
+      }
+      next();
+    }
     //admin check 
     app.get('/users/admin/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
@@ -74,14 +94,12 @@ async function run() {
     //instructor check 
     app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
       const email = req.params.email;
+      console.log(email);
       if (req.decoded.email !== email) {
-        console.log('hello');
        return res.send({ instructor: false })
       }
       const query = { email: email }
-      console.log(query);
       const user = await usersCollection.findOne(query);
-      console.log(user);
       const result = { instructor: user?.role === 'instructor' }
       res.send(result);
     })

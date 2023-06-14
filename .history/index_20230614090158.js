@@ -12,7 +12,12 @@ const port = process.env.PORT || 5000
 app.use(cors())
 app.use(express.json())
 
-
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
 
 //verify valid user
 const verifyJWT = (req, res, next) => {
@@ -58,9 +63,28 @@ async function run() {
       res.send({ token })
     })
 
-
+    //check the verifyAdmin 
+    const verifyAdmin = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== 'admin') {
+        return res.status(403).send({ error: true, message: 'forbidden message' });
+      }
+      next();
+    }
+    //check the verifyAdmin 
+    const verifyInstructor = async (req, res, next) => {
+      const email = req.decoded.email;
+      const query = { email: email }
+      const user = await usersCollection.findOne(query);
+      if (user?.role !== 'instructor') {
+        return res.status(403).send({ error: true, message: 'forbidden message' });
+      }
+      next();
+    }
     //admin check 
-    app.get('/users/admin/:email', verifyJWT, async (req, res) => {
+    app.get('/users/admin/:email',  async (req, res) => {
       const email = req.params.email;
       if (req.decoded.email !== email) {
         return res.send({ admin: false })
@@ -72,16 +96,13 @@ async function run() {
     })
 
     //instructor check 
-    app.get('/users/instructor/:email', verifyJWT, async (req, res) => {
+    app.get('/users/instructor/:email',  async (req, res) => {
       const email = req.params.email;
-      if (req.decoded.email !== email) {
-        console.log('hello');
-       return res.send({ instructor: false })
-      }
+      // if (req.decoded.email !== email) {
+      //   res.send({ instructor: false })
+      // }
       const query = { email: email }
-      console.log(query);
       const user = await usersCollection.findOne(query);
-      console.log(user);
       const result = { instructor: user?.role === 'instructor' }
       res.send(result);
     })
@@ -161,6 +182,7 @@ async function run() {
     //get the new class of instructor
     app.get('/instructor/class/:email', async (req, res) => {
       const email = req.params.email
+      console.log(email);
       const query = { email: email };
       const result = await instructorClassCollection.find(query).toArray()
       res.send(result);
@@ -173,10 +195,7 @@ async function run() {
 
     app.post('/bookings/class',  async (req, res) => {
       const bookings = req.body;
-      const query = {  $and: [
-        { instructor_name: bookings.instructor_name },
-        { email: bookings.email }
-      ] }
+      const query = { instructor_name: bookings.instructor_name }
       const existingBookings = await bookingsClassesCollection.findOne(query);
       if (!existingBookings) {
         const result = await bookingsClassesCollection.insertOne(bookings);
